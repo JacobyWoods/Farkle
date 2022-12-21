@@ -47,10 +47,12 @@ def generate_roll_statistics():
     for number_of_die in range(1, 7):
         possible_roll_combinations_dict[number_of_die] = list(product([1, 2, 3, 4, 5, 6], repeat=number_of_die))
 
+    chance_to_score_die_dict = dict()
     for i in range(1, 7):
         number_of_scoring_roles = len([x for x in possible_roll_combinations_dict[i] if check_for_score(x) > 0])
         number_of_total_roles = len(possible_roll_combinations_dict[i])
-        print(number_of_scoring_roles / number_of_total_roles)
+        chance_to_score_die_dict[i] = number_of_scoring_roles / number_of_total_roles
+    print(chance_to_score_die_dict)
 
 
 def check_for_score(kept_dice_to_check=(2, 3, 4, 4, 6, 2)):
