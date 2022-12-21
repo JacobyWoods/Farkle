@@ -1,5 +1,6 @@
 import random
 from collections import Counter
+from itertools import product
 
 
 class Round:
@@ -40,12 +41,24 @@ def print_round_status(round_object):
     pass
 
 
-def check_for_score(kept_dice_to_check=(3, 3, 1, 5, 1, 5)):
+def generate_roll_statistics():
+
+    possible_roll_combinations_dict = dict()
+    for number_of_die in range(1, 7):
+        possible_roll_combinations_dict[number_of_die] = list(product([1, 2, 3, 4, 5, 6], repeat=number_of_die))
+
+    for i in range(1, 7):
+        number_of_scoring_roles = len([x for x in possible_roll_combinations_dict[i] if check_for_score(x) > 0])
+        number_of_total_roles = len(possible_roll_combinations_dict[i])
+        print(number_of_scoring_roles / number_of_total_roles)
+
+
+def check_for_score(kept_dice_to_check=(2, 3, 4, 4, 6, 2)):
 
     dice_to_check_counter = Counter(kept_dice_to_check)
 
     roll_score, pair_count, triple_count, quad_count = 0, 0, 0, 0
-    for die_number in range(6):
+    for die_number in range(1, 7):
         dice_count = dice_to_check_counter[die_number]
         if die_number == 1:
             if dice_count < 4:
@@ -125,7 +138,6 @@ def main_script_for_now():
             roll_number += 1
             current_roll = Roll(number_of_dice_to_roll)
             print(f'Dice rolled: {current_roll.roll_dice}')
-            max_roll_score = check_for_score(current_roll.roll_dice)
             print(f'Roll max score: {current_roll.max_roll_score}')
             if current_roll.max_roll_score == 0:
                 round_score = 0
@@ -158,4 +170,4 @@ def main_script_for_now():
 
 if __name__ == '__main__':
 
-    main_script_for_now()
+    generate_roll_statistics()
