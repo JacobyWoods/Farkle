@@ -44,15 +44,16 @@ def print_round_status(round_object):
 def generate_roll_statistics():
 
     possible_roll_combinations_dict = dict()
-    for number_of_die in range(1, 7):
-        possible_roll_combinations_dict[number_of_die] = list(product([1, 2, 3, 4, 5, 6], repeat=number_of_die))
+    for die_roll_number in range(1, 7):
+        possible_roll_combinations_dict[die_roll_number] = list(product([1, 2, 3, 4, 5, 6], repeat=die_roll_number))
 
     chance_to_score_die_dict = dict()
-    for i in range(1, 7):
-        number_of_scoring_roles = len([x for x in possible_roll_combinations_dict[i] if check_for_score(x) > 0])
-        number_of_total_roles = len(possible_roll_combinations_dict[i])
-        chance_to_score_die_dict[i] = number_of_scoring_roles / number_of_total_roles
-    print(chance_to_score_die_dict)
+    for die_roll_number in range(1, 7):
+        number_of_scoring_roles = len([x for x in possible_roll_combinations_dict[die_roll_number] if check_for_score(x) > 0])
+        number_of_total_roles = len(possible_roll_combinations_dict[die_roll_number])
+        chance_to_score_die_dict[die_roll_number] = number_of_scoring_roles / number_of_total_roles
+
+    return chance_to_score_die_dict
 
 
 def check_for_score(kept_dice_to_check=(2, 3, 4, 4, 6, 2)):
@@ -128,10 +129,22 @@ def check_for_no_score_dice(dice_to_check=(2, 1, 3, 4, 5, 6)):
 def main_script_for_now():
 
     print('Welcome to Farkle game!')
-    user_play_y_n = input('Play (y/n)?: ')
+    while True:
+        user_play_y_n = input('Play (y/n)?: ')
+        if user_play_y_n == 'y' or user_play_y_n == 'n':
+            break
+        else:
+            print('Invalid input. Try again.')
+
+    chance_to_score_dict = generate_roll_statistics()
 
     if user_play_y_n == 'y':
-        roll_or_hold = input('Roll or hold (r/h)?: ')
+        while True:
+            roll_or_hold = input('Roll or hold (r/h)?: ')
+            if roll_or_hold == 'r' or roll_or_hold == 'h':
+                break
+            else:
+                print('Invalid input. Try again.')
         number_of_dice_to_roll = 6
         hand = Hand()
         round_score = 0
@@ -145,8 +158,14 @@ def main_script_for_now():
                 round_score = 0
                 print('Sorry, you Farkle!')
                 break
-            dice_to_hold_index = [int(x) for x in input('Index of dice to hold separated by space (0 is first index): ').split()]
-            dice_to_hold = [current_roll.roll_dice[x] for x in dice_to_hold_index]
+            while True:
+                try:
+                    dice_to_hold_index = [int(x) for x in input('Index of dice to hold separated by space (0 is first index): ').split()]
+                    dice_to_hold = [current_roll.roll_dice[x] for x in dice_to_hold_index]
+                except:
+                    print('Invalid selection, please try again.')
+                else:
+                    break
             while check_for_no_score_dice(dice_to_hold):
                 print('Sorry, you can only keep scoring dice. Try again.')
                 dice_to_hold_index = [int(x) for x in input('Index of dice to hold separated by space (0 is first index): ').split()]
@@ -161,7 +180,14 @@ def main_script_for_now():
             if number_of_dice_to_roll != 0:
                 print(f'Number of dice to roll: {number_of_dice_to_roll}')
                 print('*' * 35)
-                roll_or_hold = input('Roll or hold (r/h)?: ')
+                print(f'Change to roll a score with {number_of_dice_to_roll} dice: '
+                      f'{round(chance_to_score_dict[number_of_dice_to_roll] * 100, 2)}%')
+                while True:
+                    roll_or_hold = input('Roll or hold (r/h)?: ')
+                    if roll_or_hold == 'r' or roll_or_hold == 'h':
+                        break
+                    else:
+                        print('Invalid input. Try again.')
             else:
                 print('Congrats, new roll!')
                 number_of_dice_to_roll = 6
@@ -172,4 +198,4 @@ def main_script_for_now():
 
 if __name__ == '__main__':
 
-    generate_roll_statistics()
+    main_script_for_now()
